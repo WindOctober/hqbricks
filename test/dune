@@ -7,6 +7,7 @@
   qft_test
   qpe_test
   brus_test
+  concretization_test
   qbircks_json_serialize_test
   qbircks_translation_test)
  (libraries alcotest hqbricks algo_verif))

@@ -54,11 +54,11 @@ module Vector_map = struct
                   if Scalar.eq_zero scalar then None
                   else Some (Phase.zero, scalar)
               | p, p2 when Phase.eq_zero p && Phase.eq_one_half p2 ->
-                  let scalar = Scalar.(simp @@ SNeg (SAdd (s, SNeg s2))) in
+                  let scalar = Scalar.(simp @@ SAdd (s, SNeg s2)) in
                   if Scalar.eq_zero scalar then None
                   else Some (Phase.zero, scalar)
               | p, p2 when Phase.eq_one_half p && Phase.eq_zero p2 ->
-                  let scalar = Scalar.(simp @@ SNeg (SAdd (SNeg s, s2))) in
+                  let scalar = Scalar.(simp @@ SAdd (SNeg s, s2)) in
                   if Scalar.eq_zero scalar then None
                   else Some (Phase.zero, scalar)
               | p, p2 when Phase.eq_one_half p && Phase.eq_one_half p2 ->
