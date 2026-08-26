@@ -295,10 +295,31 @@ let z_of_ir gate =
   | qreg :: _ -> Prog.Gate (z @@ Qbircks.Base.qreg_to_prog qreg)
   | _ -> failwith "z_of_ir gate needs 1 qreg param"
 
+let rz_prog_of_ir_angle num den_pow qreg =
+  let den_pow = Z.to_int den_pow in
+  let modulus = Z.shift_left Z.one den_pow in
+  let numerator = Z.(abs num mod modulus) in
+  let sign = Z.sign num in
+  let rec loop bit prog =
+    if bit >= den_pow then Option.value ~default:Prog.Skip prog
+    else
+      let prog =
+        if Z.testbit numerator bit then
+          let exponent = Z.of_int (den_pow - bit) in
+          let exponent = if sign < 0 then Z.neg exponent else exponent in
+          let gate = Prog.Gate (rz Prog.Base.(Const exponent) qreg) in
+          Some
+            (Option.fold ~none:gate ~some:(fun prog -> Prog.seq prog gate) prog)
+        else prog
+      in
+      loop (bit + 1) prog
+  in
+  loop 0 None
+
 let rz_of_ir gate =
   match Qbircks.Gate.(gate.qreg_params, gate.params) with
-  | qreg :: _, Qbircks.Gate.Param.Angle i :: _ ->
-      Prog.Gate (rz Prog.Base.(Const i) @@ Qbircks.Base.qreg_to_prog qreg)
+  | qreg :: _, Qbircks.Gate.Param.Angle (num, den_pow) :: _ ->
+      rz_prog_of_ir_angle num den_pow (Qbircks.Base.qreg_to_prog qreg)
   | _ -> failwith "rz_of_ir gate needs 1 qreg param and 1 angle param"
 
 let ir_qreg_to_qbit_val = function
@@ -330,10 +351,10 @@ let cz_of_ir gate =
 
 let crz_of_ir gate =
   match Qbircks.Gate.(gate.qreg_params, gate.params) with
-  | qreg1 :: qreg2 :: _, Qbircks.Gate.Param.Angle i :: _ ->
+  | qreg1 :: qreg2 :: _, Qbircks.Gate.Param.Angle (num, den_pow) :: _ ->
       Prog.(
         ir_qreg_to_qbit_val qreg1
-        => Gate (rz (Const i) @@ Qbircks.Base.qreg_to_prog qreg2))
+        => rz_prog_of_ir_angle num den_pow (Qbircks.Base.qreg_to_prog qreg2))
   | _ -> failwith "crz_of_ir gate needs 2 qreg params and 1 angle param"
 
 let ccx_of_ir gate =

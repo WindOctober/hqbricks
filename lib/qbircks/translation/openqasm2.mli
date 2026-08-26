@@ -22,6 +22,19 @@
 
 (** QbIRcks-OpenQASM2 translations. *)
 
+type parsed = {
+  ast : Ast.t;
+  qregs : Base.reg_id list;
+  cregs : Base.reg_id list;
+}
+(** A parsed AST and its declarations. Declaration lists preserve source order
+    and include unused registers. *)
+
+(** Parsing uses module-global declaration tables, so calls to OpenQASM parsing
+    functions in this module must not overlap. *)
+
+val of_openqasm2_with_declarations : string -> parsed
 val of_openqasm2 : string -> Ast.t
+val of_openqasm2_file_with_declarations : string -> parsed
 val of_openqasm2_file : string -> Ast.t
 val to_openqasm2 : Ast.t -> string

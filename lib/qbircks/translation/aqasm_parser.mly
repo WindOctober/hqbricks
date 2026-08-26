@@ -186,19 +186,13 @@ explist:
   | explist COMMA exp { $1 @ [ $3 ] }
 
 exp:
-  | PI { Gate.Param.Angle Z.zero }
-  | PI DIV INT { Gate.Param.Angle (int_to_2_pow_n $3) }
-  | INT MUL PI {
-      if Z.equal $1 Z.one then Gate.Param.Angle Z.zero
-      else failwith "Only PI and -1*PI are handled as angle numerator"
-    }
-  | INT MUL PI DIV INT {
-      if Z.equal $1 Z.one then Gate.Param.Angle (int_to_2_pow_n $5)
-      else failwith "Only PI and -1*PI are handled as angle numerator"
-    }
+  | PI { Gate.Param.Angle (Z.one, Z.zero) }
+  | PI DIV INT { Gate.Param.Angle (Z.one, int_to_2_pow_n $3) }
+  | INT MUL PI { Gate.Param.Angle ($1, Z.zero) }
+  | INT MUL PI DIV INT { Gate.Param.Angle ($1, int_to_2_pow_n $5) }
+  | NEG INT MUL PI { Gate.Param.Angle (Z.neg $2, Z.zero) }
   | NEG INT MUL PI DIV INT {
-      if Z.equal $2 Z.one then Gate.Param.Angle (Z.(-int_to_2_pow_n $6))
-      else failwith "Only PI and -1*PI are handled as angle numerator"
+      Gate.Param.Angle (Z.neg $2, int_to_2_pow_n $6)
     }
   | INT { Gate.Param.Int $1 }
   | NEG INT { Gate.Param.Int Z.(-$2) }

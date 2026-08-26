@@ -23,6 +23,12 @@
 open Ast
 open Base
 
+type parsed = {
+  ast : Ast.t;
+  qregs : Base.reg_id list;
+  cregs : Base.reg_id list;
+}
+
 (* U and CX are builtin gates, the others are in qelib1.inc
    which is systematically included *)
 let builtin_gates =
@@ -54,16 +60,25 @@ let builtin_gates =
   ]
 
 (* Ir of OpenQASM2 *)
-let of_openqasm2 str =
-  let lexbuf = Lexing.from_string str in
-  let ir = Openqasm2_parser.main_program Openqasm2_lexer.token lexbuf in
-  remove_skip_seq ir
+let parse lexbuf =
+  let ast, qregs, cregs =
+    Openqasm2_parser.main_program Openqasm2_lexer.token lexbuf
+  in
+  { ast = remove_skip_seq ast; qregs; cregs }
 
-let of_openqasm2_file file =
+let of_openqasm2_with_declarations str =
+  let lexbuf = Lexing.from_string str in
+  parse lexbuf
+
+let of_openqasm2 str = (of_openqasm2_with_declarations str).ast
+
+let of_openqasm2_file_with_declarations file =
   let c = open_in file in
-  let lexbuf = Lexing.from_channel c in
-  let ir = Openqasm2_parser.main_program Openqasm2_lexer.token lexbuf in
-  remove_skip_seq ir
+  Fun.protect
+    ~finally:(fun () -> close_in_noerr c)
+    (fun () -> parse (Lexing.from_channel c))
+
+let of_openqasm2_file file = (of_openqasm2_file_with_declarations file).ast
 
 (* Ir to OpenQASM2 *)
 let qreg_to_openqasm2 = function
@@ -74,9 +89,14 @@ let creg_to_openqasm2 = function
   | CCons (name, _) -> name
   | CIndex ((name, _), i) -> name ^ "[" ^ Z.to_string i ^ "]"
 
-let angle_to_openqasm2 a =
-  if Z.(geq a ~$0) then "pi/" ^ Z.(to_string @@ pow ~$2 (to_int a))
-  else "-pi/" ^ Z.(to_string @@ pow ~$2 (to_int (-a)))
+let angle_to_openqasm2 num den_pow =
+  let numerator =
+    if Z.equal num Z.one then "pi"
+    else if Z.equal num Z.minus_one then "-pi"
+    else Z.to_string num ^ "*pi"
+  in
+  if Z.equal den_pow Z.zero then numerator
+  else numerator ^ "/" ^ Z.(to_string @@ pow ~$2 (to_int den_pow))
 
 (* The given gate will be considered as a builtin gate
    if they have the same name case insensitive *)
@@ -90,7 +110,7 @@ let gate_name_to_openqasm2 gate =
 
 let param_to_openqasm2 = function
   | Gate.Param.Int i -> Z.to_string i
-  | Gate.Param.Angle i -> angle_to_openqasm2 i
+  | Gate.Param.Angle (num, den_pow) -> angle_to_openqasm2 num den_pow
   | Gate.Param.Scalar (i1, i2) -> Z.to_string i1 ^ "/" ^ Z.to_string i2
 
 let params_to_openqasm2 angles =

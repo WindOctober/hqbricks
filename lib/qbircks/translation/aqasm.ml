@@ -119,9 +119,14 @@ let rec bool_to_aqasm creg_map = function
   | And (b1, b2) ->
       bool_to_aqasm creg_map b1 ^ " & " ^ bool_to_aqasm creg_map b2
 
-let angle_to_aqasm a =
-  if Z.(geq a ~$0) then "PI/" ^ Z.(to_string @@ pow ~$2 (to_int a))
-  else "-1*PI/" ^ Z.(to_string @@ pow ~$2 (to_int (-a)))
+let angle_to_aqasm num den_pow =
+  let numerator =
+    if Z.equal num Z.one then "PI"
+    else if Z.equal num Z.minus_one then "-1*PI"
+    else Z.to_string num ^ "*PI"
+  in
+  if Z.equal den_pow Z.zero then numerator
+  else numerator ^ "/" ^ Z.(to_string @@ pow ~$2 (to_int den_pow))
 
 (* The given gate will be considered as a builtin gate in one of those cases:
    - If they have the same name case insensitive
@@ -155,7 +160,7 @@ let gate_name_to_aqasm gate =
 
 let param_to_aqasm = function
   | Gate.Param.Int i -> Z.to_string i
-  | Gate.Param.Angle i -> angle_to_aqasm i
+  | Gate.Param.Angle (num, den_pow) -> angle_to_aqasm num den_pow
   | Gate.Param.Scalar (i1, i2) -> Z.to_string i1 ^ "/" ^ Z.to_string i2
 
 let params_to_aqasm params =

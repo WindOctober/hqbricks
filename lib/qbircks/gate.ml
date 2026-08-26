@@ -23,14 +23,20 @@
 open Base
 
 module Param = struct
-  type t = Int of ir_int | Angle of ir_int | Scalar of (ir_int * ir_int)
+  type t =
+    | Int of ir_int
+    | Angle of ir_int * ir_int
+    | Scalar of (ir_int * ir_int)
   [@@deriving yojson, eq, show { with_path = false }]
 
   let to_string = show
 
   let of_prog = function
     | Prog.Gate.Param.Int i -> Int (int_of_prog i)
-    | Prog.Gate.Param.Angle i -> Angle (int_of_prog i)
+    | Prog.Gate.Param.Angle i ->
+        let exponent = int_of_prog i in
+        if Z.sign exponent >= 0 then Angle (Z.one, exponent)
+        else Angle (Z.minus_one, Z.neg exponent)
     | Prog.Gate.Param.Scalar s -> Scalar (scalar_of_prog s)
 end
 

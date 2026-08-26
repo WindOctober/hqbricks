@@ -878,7 +878,7 @@ let qft5 =
                                           QIndex (("q", Z.(~$5)), Z.(~$3));
                                           QIndex (("q", Z.(~$5)), Z.(~$4));
                                         ];
-                                      params = [ Angle Z.(~$2) ];
+                                      params = [ Angle (Z.one, Z.(~$2)) ];
                                     },
                                   Gate
                                     {
@@ -888,7 +888,7 @@ let qft5 =
                                           QIndex (("q", Z.(~$5)), Z.(~$2));
                                           QIndex (("q", Z.(~$5)), Z.(~$4));
                                         ];
-                                      params = [ Angle Z.(~$3) ];
+                                      params = [ Angle (Z.one, Z.(~$3)) ];
                                     } ),
                               Gate
                                 {
@@ -898,7 +898,7 @@ let qft5 =
                                       QIndex (("q", Z.(~$5)), Z.(~$1));
                                       QIndex (("q", Z.(~$5)), Z.(~$4));
                                     ];
-                                  params = [ Angle Z.(~$4) ];
+                                  params = [ Angle (Z.one, Z.(~$4)) ];
                                 } ),
                           Gate
                             {
@@ -908,7 +908,7 @@ let qft5 =
                                   QIndex (("q", Z.(~$5)), Z.(~$0));
                                   QIndex (("q", Z.(~$5)), Z.(~$4));
                                 ];
-                              params = [ Angle Z.(~$5) ];
+                              params = [ Angle (Z.one, Z.(~$5)) ];
                             } ) ),
                   Seq
                     ( Gate
@@ -927,7 +927,7 @@ let qft5 =
                                       QIndex (("q", Z.(~$5)), Z.(~$2));
                                       QIndex (("q", Z.(~$5)), Z.(~$3));
                                     ];
-                                  params = [ Angle Z.(~$2) ];
+                                  params = [ Angle (Z.one, Z.(~$2)) ];
                                 },
                               Gate
                                 {
@@ -937,7 +937,7 @@ let qft5 =
                                       QIndex (("q", Z.(~$5)), Z.(~$1));
                                       QIndex (("q", Z.(~$5)), Z.(~$3));
                                     ];
-                                  params = [ Angle Z.(~$3) ];
+                                  params = [ Angle (Z.one, Z.(~$3)) ];
                                 } ),
                           Gate
                             {
@@ -947,7 +947,7 @@ let qft5 =
                                   QIndex (("q", Z.(~$5)), Z.(~$0));
                                   QIndex (("q", Z.(~$5)), Z.(~$3));
                                 ];
-                              params = [ Angle Z.(~$4) ];
+                              params = [ Angle (Z.one, Z.(~$4)) ];
                             } ) ) ),
               Seq
                 ( Gate
@@ -965,7 +965,7 @@ let qft5 =
                               QIndex (("q", Z.(~$5)), Z.(~$1));
                               QIndex (("q", Z.(~$5)), Z.(~$2));
                             ];
-                          params = [ Angle Z.(~$2) ];
+                          params = [ Angle (Z.one, Z.(~$2)) ];
                         },
                       Gate
                         {
@@ -975,7 +975,7 @@ let qft5 =
                               QIndex (("q", Z.(~$5)), Z.(~$0));
                               QIndex (("q", Z.(~$5)), Z.(~$2));
                             ];
-                          params = [ Angle Z.(~$3) ];
+                          params = [ Angle (Z.one, Z.(~$3)) ];
                         } ) ) ),
           Seq
             ( Gate
@@ -992,7 +992,7 @@ let qft5 =
                       QIndex (("q", Z.(~$5)), Z.(~$0));
                       QIndex (("q", Z.(~$5)), Z.(~$1));
                     ];
-                  params = [ Angle Z.(~$2) ];
+                  params = [ Angle (Z.one, Z.(~$2)) ];
                 } ) ),
       Seq
         ( Gate
@@ -1051,7 +1051,9 @@ let qft5' =
                                                                 ];
                                                               params =
                                                                 [
-                                                                  Angle Z.(~$2);
+                                                                  Angle
+                                                                    ( Z.one,
+                                                                      Z.(~$2) );
                                                                 ];
                                                             } ),
                                                       Gate
@@ -1067,7 +1069,10 @@ let qft5' =
                                                                   Z.(~$4) );
                                                             ];
                                                           params =
-                                                            [ Angle Z.(~$3) ];
+                                                            [
+                                                              Angle
+                                                                (Z.one, Z.(~$3));
+                                                            ];
                                                         } ),
                                                   Gate
                                                     {
@@ -1081,7 +1086,10 @@ let qft5' =
                                                             ( ("q", Z.(~$5)),
                                                               Z.(~$4) );
                                                         ];
-                                                      params = [ Angle Z.(~$4) ];
+                                                      params =
+                                                        [
+                                                          Angle (Z.one, Z.(~$4));
+                                                        ];
                                                     } ),
                                               Gate
                                                 {
@@ -1093,7 +1101,8 @@ let qft5' =
                                                       QIndex
                                                         (("q", Z.(~$5)), Z.(~$4));
                                                     ];
-                                                  params = [ Angle Z.(~$5) ];
+                                                  params =
+                                                    [ Angle (Z.one, Z.(~$5)) ];
                                                 } ),
                                           Gate
                                             {
@@ -1113,7 +1122,7 @@ let qft5' =
                                               QIndex (("q", Z.(~$5)), Z.(~$2));
                                               QIndex (("q", Z.(~$5)), Z.(~$3));
                                             ];
-                                          params = [ Angle Z.(~$2) ];
+                                          params = [ Angle (Z.one, Z.(~$2)) ];
                                         } ),
                                   Gate
                                     {
@@ -1123,7 +1132,7 @@ let qft5' =
                                           QIndex (("q", Z.(~$5)), Z.(~$1));
                                           QIndex (("q", Z.(~$5)), Z.(~$3));
                                         ];
-                                      params = [ Angle Z.(~$3) ];
+                                      params = [ Angle (Z.one, Z.(~$3)) ];
                                     } ),
                               Gate
                                 {
@@ -1133,7 +1142,7 @@ let qft5' =
                                       QIndex (("q", Z.(~$5)), Z.(~$0));
                                       QIndex (("q", Z.(~$5)), Z.(~$3));
                                     ];
-                                  params = [ Angle Z.(~$4) ];
+                                  params = [ Angle (Z.one, Z.(~$4)) ];
                                 } ),
                           Gate
                             {
@@ -1149,7 +1158,7 @@ let qft5' =
                               QIndex (("q", Z.(~$5)), Z.(~$1));
                               QIndex (("q", Z.(~$5)), Z.(~$2));
                             ];
-                          params = [ Angle Z.(~$2) ];
+                          params = [ Angle (Z.one, Z.(~$2)) ];
                         } ),
                   Gate
                     {
@@ -1159,7 +1168,7 @@ let qft5' =
                           QIndex (("q", Z.(~$5)), Z.(~$0));
                           QIndex (("q", Z.(~$5)), Z.(~$2));
                         ];
-                      params = [ Angle Z.(~$3) ];
+                      params = [ Angle (Z.one, Z.(~$3)) ];
                     } ),
               Gate
                 {
@@ -1175,7 +1184,7 @@ let qft5' =
                   QIndex (("q", Z.(~$5)), Z.(~$0));
                   QIndex (("q", Z.(~$5)), Z.(~$1));
                 ];
-              params = [ Angle Z.(~$2) ];
+              params = [ Angle (Z.one, Z.(~$2)) ];
             } ),
       Gate
         {
@@ -1232,7 +1241,9 @@ let qft5'' =
                                                                 ];
                                                               params =
                                                                 [
-                                                                  Angle Z.(~$2);
+                                                                  Angle
+                                                                    ( Z.one,
+                                                                      Z.(~$2) );
                                                                 ];
                                                             } ),
                                                       Gate
@@ -1248,7 +1259,10 @@ let qft5'' =
                                                                   Z.(~$4) );
                                                             ];
                                                           params =
-                                                            [ Angle Z.(~$3) ];
+                                                            [
+                                                              Angle
+                                                                (Z.one, Z.(~$3));
+                                                            ];
                                                         } ),
                                                   Gate
                                                     {
@@ -1262,7 +1276,10 @@ let qft5'' =
                                                             ( ("q", Z.(~$5)),
                                                               Z.(~$4) );
                                                         ];
-                                                      params = [ Angle Z.(~$4) ];
+                                                      params =
+                                                        [
+                                                          Angle (Z.one, Z.(~$4));
+                                                        ];
                                                     } ),
                                               Gate
                                                 {
@@ -1274,7 +1291,8 @@ let qft5'' =
                                                       QIndex
                                                         (("q", Z.(~$5)), Z.(~$4));
                                                     ];
-                                                  params = [ Angle Z.(~$5) ];
+                                                  params =
+                                                    [ Angle (Z.one, Z.(~$5)) ];
                                                 } ),
                                           Gate
                                             {
@@ -1294,7 +1312,7 @@ let qft5'' =
                                               QIndex (("q", Z.(~$5)), Z.(~$2));
                                               QIndex (("q", Z.(~$5)), Z.(~$3));
                                             ];
-                                          params = [ Angle Z.(~$2) ];
+                                          params = [ Angle (Z.one, Z.(~$2)) ];
                                         } ),
                                   Gate
                                     {
@@ -1304,7 +1322,7 @@ let qft5'' =
                                           QIndex (("q", Z.(~$5)), Z.(~$1));
                                           QIndex (("q", Z.(~$5)), Z.(~$3));
                                         ];
-                                      params = [ Angle Z.(~$3) ];
+                                      params = [ Angle (Z.one, Z.(~$3)) ];
                                     } ),
                               Gate
                                 {
@@ -1314,7 +1332,7 @@ let qft5'' =
                                       QIndex (("q", Z.(~$5)), Z.(~$0));
                                       QIndex (("q", Z.(~$5)), Z.(~$3));
                                     ];
-                                  params = [ Angle Z.(~$4) ];
+                                  params = [ Angle (Z.one, Z.(~$4)) ];
                                 } ),
                           Gate
                             {
@@ -1330,7 +1348,7 @@ let qft5'' =
                               QIndex (("q", Z.(~$5)), Z.(~$1));
                               QIndex (("q", Z.(~$5)), Z.(~$2));
                             ];
-                          params = [ Angle Z.(~$2) ];
+                          params = [ Angle (Z.one, Z.(~$2)) ];
                         } ),
                   Gate
                     {
@@ -1340,7 +1358,7 @@ let qft5'' =
                           QIndex (("q", Z.(~$5)), Z.(~$0));
                           QIndex (("q", Z.(~$5)), Z.(~$2));
                         ];
-                      params = [ Angle Z.(~$3) ];
+                      params = [ Angle (Z.one, Z.(~$3)) ];
                     } ),
               Gate
                 {
@@ -1356,7 +1374,7 @@ let qft5'' =
                   QIndex (("q", Z.(~$5)), Z.(~$0));
                   QIndex (("q", Z.(~$5)), Z.(~$1));
                 ];
-              params = [ Angle Z.(~$2) ];
+              params = [ Angle (Z.one, Z.(~$2)) ];
             } ),
       Gate
         {

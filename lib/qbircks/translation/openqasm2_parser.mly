@@ -26,6 +26,9 @@ open Base
 
 let qregs_id = ref []
 let cregs_id = ref []
+let reset_reg_ids () =
+  qregs_id := [];
+  cregs_id := []
 let insert_qreg_id name len = qregs_id := (name, len) :: !qregs_id
 let insert_creg_id name len = cregs_id := (name, len) :: !cregs_id
 let get_qreg_id name = (name, List.assoc name !qregs_id)
@@ -33,21 +36,26 @@ let get_creg_id name = (name, List.assoc name !cregs_id)
 
 let bool_of_creg_eq_int i_eq = function
   | CCons (name, len) ->
-      let rec aux i =
-        let cbit =
-          let cb = CBitVal ((name, len), i) in
-          if Z.(equal ((i_eq asr to_int i) mod (of_int 2)) zero) then Not cb
-          else cb
+      if Z.leq len Z.zero then failwith "Classical register cannot be empty"
+      else if Z.gt (Z.of_int (Z.numbits i_eq)) len then
+        failwith "Classical condition value does not fit in its register"
+      else
+        let cbit i =
+          let cb = CBitVal ((name, len), Z.of_int i) in
+          if Z.testbit i_eq i then cb else Not cb
         in
-        if Z.(geq i (pred len)) then cbit else And (cbit, aux (Z.succ i))
-      in
-      aux Z.zero
+        let rec aux i condition =
+          if i < 0 then condition else aux (i - 1) (And (cbit i, condition))
+        in
+        let width = Z.to_int len in
+        aux (width - 2) (cbit (width - 1))
   | CIndex _ -> failwith "creg in creg==int should not be indexed"
 
 let int_to_2_pow_n i =
   if not Z.(equal (i land (i - one)) zero)
   then failwith "Only angle with 2^n denominator are handled"
   else Z.log2 i |> Z.of_int
+
 %}
 
 %token OPENQASM
@@ -68,12 +76,18 @@ let int_to_2_pow_n i =
 
 %start main_program
 
-%type <Ast.t> main_program
+%type <Ast.t * Base.reg_id list * Base.reg_id list> main_program
 
 %%
 
 main_program:
-  | OPENQASM REAL SEMICOLON program EOF { $4 }
+  | reset_state OPENQASM REAL SEMICOLON program EOF {
+      if not (String.equal $3 "2.0") then failwith "Only OpenQASM 2.0 is supported";
+      ($5, List.rev !qregs_id, List.rev !cregs_id)
+    }
+
+reset_state:
+  | { reset_reg_ids () }
 
 program:
   | statement { $1 }
@@ -142,20 +156,15 @@ explist:
   | explist COMMA exp { $1 @ [ $3 ] }
 
 exp:
-  | PI { Gate.Param.Angle Z.zero }
-  | PI DIV INT { Gate.Param.Angle (int_to_2_pow_n $3) }
-  | NEG PI DIV INT { Gate.Param.Angle (Z.(-int_to_2_pow_n $4)) }
-  | INT MUL PI {
-      if Z.equal $1 Z.one then Gate.Param.Angle Z.zero
-      else failwith "Only pi and -pi are handled as angle numerator"
-    }
-  | INT MUL PI DIV INT {
-      if Z.equal $1 Z.one then Gate.Param.Angle (int_to_2_pow_n $5)
-      else failwith "Only pi and -pi are handled as angle numerator"
-    }
+  | PI { Gate.Param.Angle (Z.one, Z.zero) }
+  | NEG PI { Gate.Param.Angle (Z.minus_one, Z.zero) }
+  | PI DIV INT { Gate.Param.Angle (Z.one, int_to_2_pow_n $3) }
+  | NEG PI DIV INT { Gate.Param.Angle (Z.minus_one, int_to_2_pow_n $4) }
+  | INT MUL PI { Gate.Param.Angle ($1, Z.zero) }
+  | INT MUL PI DIV INT { Gate.Param.Angle ($1, int_to_2_pow_n $5) }
+  | NEG INT MUL PI { Gate.Param.Angle (Z.neg $2, Z.zero) }
   | NEG INT MUL PI DIV INT {
-      if Z.equal $2 Z.one then Gate.Param.Angle (Z.(-int_to_2_pow_n $6))
-      else failwith "Only pi and -pi are handled as angle numerator"
+      Gate.Param.Angle (Z.neg $2, int_to_2_pow_n $6)
     }
   | INT { Gate.Param.Int ($1) }
   | NEG INT { Gate.Param.Int (Z.(-$2)) }

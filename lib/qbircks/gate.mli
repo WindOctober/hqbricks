@@ -27,7 +27,8 @@ module Param : sig
   (** Gate parameter type. *)
   type t =
     | Int of Base.ir_int  (** int parameter. *)
-    | Angle of Base.ir_int  (** angle parameter, interpreted as 1/2^i. *)
+    | Angle of Base.ir_int * Base.ir_int
+        (** [Angle (n, k)] represents the angle [n * pi / 2^k]. *)
     | Scalar of (Base.ir_int * Base.ir_int)
         (** scalar parameter, interpreted as i1 / i2. *)
 
